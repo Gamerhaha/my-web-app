@@ -95,30 +95,35 @@ pipeline {
         }
 
         stage('Deploy to EC2') {
-            steps {
-                echo '==================== Deploying to EC2 ===================='
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS}"],
-                    sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY')
-                ]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no -i $SSH_KEY ${EC2_USER}@${EC2_HOST} << EOF
+    steps {
+        echo '==================== Deploying to EC2 ===================='
+        withCredentials([
+            [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS}"],
+            sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY')
+        ]) {
+            sh '''
+                ssh -o StrictHostKeyChecking=no -i $SSH_KEY ${EC2_USER}@${EC2_HOST} << 'EOF'
+                    set -e
+                    export AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+                    export AWS_REGION=${AWS_REGION}
+                    export DOCKER_IMAGE=${DOCKER_IMAGE}
+                    export IMAGE_TAG=${IMAGE_TAG}
 
-                            set -e
-                            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    aws ecr get-login-password --region ${AWS_REGION} | sudo docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
-                            docker stop my-web-app || true
-                            docker rm my-web-app || true
+                    sudo docker stop my-web-app || true
+                    sudo docker rm my-web-app || true
 
-                            docker pull ${DOCKER_IMAGE}:${IMAGE_TAG}
-                            docker run -d --name my-web-app -p 80:3000 ${DOCKER_IMAGE}:${IMAGE_TAG}
+                    sudo docker pull ${DOCKER_IMAGE}:${IMAGE_TAG}
+                    sudo docker run -d --name my-web-app -p 80:3000 ${DOCKER_IMAGE}:${IMAGE_TAG}
 
-                            docker image prune -f
-                        EOF
-                    '''
-                }
-            }
+                    sudo docker image prune -f
+                EOF
+            '''
         }
+    }
+}
+
 
         stage('Health Check') {
             steps {
