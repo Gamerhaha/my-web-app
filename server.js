@@ -201,7 +201,7 @@ app.get('/', (req, res) => {
 
         <div class="info-card">
           <div class="info-label">Message</div>
-          <div class="info-value">Hello from Sugin  IOT-A! 🚀</div>
+          <div class="info-value">Hello from Sugin  IOT! 🚀</div>
         </div>
 
         <div class="info-card">
