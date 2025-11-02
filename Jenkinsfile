@@ -8,7 +8,7 @@ pipeline {
         DOCKER_IMAGE     = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}"
         IMAGE_TAG        = "${BUILD_NUMBER}"
 
-        EC2_HOST         = 'ec2-13-49-246-149.eu-north-1.compute.amazonaws.com'
+        EC2_HOST         = 'ec2-51-20-40-8.eu-north-1.compute.amazonaws.com'
         EC2_USER         = 'ec2-user'
 
         AWS_CREDENTIALS  = 'aws-credentials-id'
