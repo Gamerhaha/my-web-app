@@ -101,25 +101,26 @@ pipeline {
             [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS}"],
             sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY')
         ]) {
-            sh '''
+            sh """
                 ssh -o StrictHostKeyChecking=no -i $SSH_KEY ${EC2_USER}@${EC2_HOST} << 'EOF'
                     set -e
-                    export AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
-                    export AWS_REGION=${AWS_REGION}
-                    export DOCKER_IMAGE=${DOCKER_IMAGE}
-                    export IMAGE_TAG=${IMAGE_TAG}
+                    echo "Logging into ECR..."
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
-                    aws ecr get-login-password --region ${AWS_REGION} | sudo docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    echo "Stopping old container..."
+                    docker stop my-web-app || true
+                    docker rm my-web-app || true
 
-                    sudo docker stop my-web-app || true
-                    sudo docker rm my-web-app || true
+                    echo "Pulling latest image..."
+                    docker pull ${DOCKER_IMAGE}:${IMAGE_TAG}
 
-                    sudo docker pull ${DOCKER_IMAGE}:${IMAGE_TAG}
-                    sudo docker run -d --name my-web-app -p 80:3000 ${DOCKER_IMAGE}:${IMAGE_TAG}
+                    echo "Running container..."
+                    docker run -d --name my-web-app -p 80:3000 ${DOCKER_IMAGE}:${IMAGE_TAG}
 
-                    sudo docker image prune -f
+                    echo "Cleaning up old images..."
+                    docker image prune -f
                 EOF
-            '''
+            """
         }
     }
 }
