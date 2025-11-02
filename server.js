@@ -411,7 +411,7 @@ app.get('/health', (req, res) => {
             <span class="detail-value">✓ Healthy</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Uptime</span>
+            <span class="detail-label">Uptime!!!!</span>
             <span class="detail-value">${Math.floor(process.uptime())} seconds</span>
           </div>
           <div class="detail-row">
