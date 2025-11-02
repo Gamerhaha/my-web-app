@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "echo 'No build step required for this Node.js app'"
   },
   "dependencies": {
     "express": "^4.18.2"
