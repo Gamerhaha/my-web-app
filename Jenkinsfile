@@ -102,7 +102,12 @@ pipeline {
             sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY')
         ]) {
             sh '''
-                ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_HOST} << 'ENDSSH'
+                ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_HOST} \
+                "AWS_REGION=${AWS_REGION} \
+                AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} \
+                DOCKER_IMAGE=${DOCKER_IMAGE} \
+                IMAGE_TAG=${IMAGE_TAG} \
+                bash -s" << 'ENDSSH'
                     set -e
                     echo "Logging into ECR..."
                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
