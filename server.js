@@ -196,7 +196,7 @@ app.get('/', (req, res) => {
             </svg>
           </div>
           <h1>CI/CD Pipeline</h1>
-          <p class="subtitle">Deployment Successful</p>
+          <p class="subtitle">Deployment is Successful</p>
         </div>
 
         <div class="info-card">
