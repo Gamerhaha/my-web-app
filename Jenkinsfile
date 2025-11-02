@@ -12,7 +12,7 @@ pipeline {
         EC2_USER         = 'ec2-user'
 
         AWS_CREDENTIALS  = 'aws-credentials-id'
-        EMAIL_RECIPIENTS = 'your-email@example.com'
+        EMAIL_RECIPIENTS = 'nebalsugin@gmail.com'
     }
 
     stages {
