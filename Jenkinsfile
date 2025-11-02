@@ -101,8 +101,8 @@ pipeline {
             [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS}"],
             sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY')
         ]) {
-            sh """
-                ssh -o StrictHostKeyChecking=no -i $SSH_KEY ${EC2_USER}@${EC2_HOST} << 'EOF'
+            sh '''
+                ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_HOST} << 'ENDSSH'
                     set -e
                     echo "Logging into ECR..."
                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
@@ -119,8 +119,8 @@ pipeline {
 
                     echo "Cleaning up old images..."
                     docker image prune -f
-                EOF
-            """
+ENDSSH
+            '''
         }
     }
 }
